@@ -1,0 +1,99 @@
+﻿
+
+using _02_CRUD.Controladores;
+using _02_CRUD.Modelos;
+using _02_CRUD.Vistas.Usuarios;
+
+namespace _02_CRUD.Vistas.Clientes
+{
+    public partial class frm_editar_cliente : Form
+    {
+        int _id;
+        private readonly Cliente_Controller _cliente_Controller = new Cliente_Controller();
+        public frm_editar_cliente(int id)
+        {
+            InitializeComponent();
+            _id = id;
+        }
+
+        private void btn_Guardar_Click(object sender, EventArgs e)
+        {
+            if (!validaciones())
+            {
+                MessageBox.Show("Complete los campos para guardar el usuario");
+                return;
+            }
+            var cliente = new ClienteModel
+            {
+                Apellidos = txt_Apellidos.Text.Trim(),
+                Nombres = txt_Nombres.Text.Trim(),
+                RUC = txt_Cedula.Text.Trim(),
+                Direccion = txt_Dirrecion.Text.Trim(),
+                Correo = txt_Correo.Text.Trim(),
+                Telefono = txt_Telefono.Text.Trim(),
+                Estado = chb_Estado.Checked == true,
+                id = _id
+            };
+            var nuevo_cliente = _cliente_Controller.editar(cliente);
+
+            if (nuevo_cliente != "ok")
+            {
+                MessageBox.Show(nuevo_cliente);
+            }
+            else
+            {
+                MessageBox.Show("Cliente insertado con exito");
+                limpiar_cajas();
+                var frm_lista = new frm_lista_clientes();
+                frm_lista.Show();
+                this.Close();
+            }
+        }
+
+        private void frm_editar_cliente_Load(object sender, EventArgs e)
+        {
+            var cliente = _cliente_Controller.uno(_id);
+            txt_Apellidos.Text = cliente.Apellidos;
+            txt_Nombres.Text = cliente.Nombres;
+            txt_Cedula.Text = cliente.RUC;
+            txt_Correo.Text = cliente.Correo;
+            txt_Dirrecion.Text = cliente.Direccion;
+            txt_Telefono.Text = cliente.Telefono;
+            chb_Estado.Checked = cliente.Estado;
+        }
+        public void limpiar_cajas()
+        {
+            txt_Apellidos.Text = "";
+            txt_Nombres.Text = "";
+            txt_Cedula.Text = string.Empty;
+            txt_Correo.Text = "";
+            txt_Dirrecion.Text = "";
+            txt_Telefono.Text = "";
+            chb_Estado.Checked = false;
+        }
+        public bool validaciones()
+        {
+            if (txt_Apellidos.Text.Trim() == "" || txt_Cedula.Text.Trim() == ""
+                || txt_Dirrecion.Text.Trim() == "" || txt_Telefono.Text.Trim() == ""
+                || txt_Nombres.Text.Trim() == "" || txt_Correo.Text.Trim() == "")
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
+        private void btn_Cancelar_Click(object sender, EventArgs e)
+        {
+            limpiar_cajas();
+        }
+
+        private void btn_Salir_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}

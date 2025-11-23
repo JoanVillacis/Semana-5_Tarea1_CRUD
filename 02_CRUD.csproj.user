@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Compile Update="Vistas\Clientes\frm_agregar_cliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Vistas\Clientes\frm_editar_cliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Vistas\Clientes\frm_lista_clientes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Vistas\Dashboard\frm_dashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Vistas\frm_login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Vistas\Roles\frm_agregar_rol.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Vistas\Roles\frm_editar_rol.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Vistas\Roles\frm_lista_roles.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Vistas\Usuarios\frm_edita_usuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Vistas\Usuarios\frm_insertar_usuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Vistas\Usuarios\frm_lista_usuarios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,96 @@
+﻿using _02_CRUD.Controladores;
+using _02_CRUD.Modelos;
+using _02_CRUD.Vistas.Usuarios;
+
+namespace _02_CRUD.Vistas.Roles
+{
+    public partial class frm_editar_rol : Form
+    {
+        private readonly Rol_Controller _rol_Controller = new Rol_Controller();
+        int _id;
+        public frm_editar_rol(int id_rol)
+        {
+            InitializeComponent();
+            _id = id_rol;
+        }
+
+        private void btn_Guardar_Click(object sender, EventArgs e)
+        {
+            if (!validaciones())
+            {
+                MessageBox.Show("Complete los campos para guardar el rol");
+                return;
+            }
+            var rol_Model = new Rol_Model
+            {
+                Nombre_Rol = txt_Nombre.Text.Trim(),
+                Descripcion_Rol = txt_Descricion.Text.Trim(),
+                Estado_Rol = chb_Estado.Checked == true,
+                Id_Rol = _id
+            };
+            var nuevo_rol = _rol_Controller.editar(rol_Model);
+
+            if (nuevo_rol != "ok")
+            {
+                MessageBox.Show(nuevo_rol);
+            }
+            else
+            {
+                MessageBox.Show("Rol actualizado con exito");
+                limpiar_cajas();
+                var frm_lista = new frm_lista_roles();
+                frm_lista.Show();
+                this.Close();
+            }
+        }
+
+        private void frm_editar_rol_Load(object sender, EventArgs e)
+        {
+            Rol_Model rol_Model = _rol_Controller.uno(_id);
+            if (rol_Model == null)
+            {
+                MessageBox.Show("Rol no encontrado");
+                this.Close();
+                return;
+            }
+
+            txt_Nombre.Text = rol_Model.Nombre_Rol;
+            txt_Descricion.Text = rol_Model.Descripcion_Rol;
+            chb_Estado.Checked = rol_Model.Estado_Rol;
+        }
+
+        public bool validaciones()
+        {
+            if (txt_Nombre.Text.Trim() == "" || txt_Descricion.Text.Trim() == "")
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
+        public void limpiar_cajas()
+        {
+            txt_Nombre.Text = "";
+            txt_Descricion.Text = "";
+            chb_Estado.Checked = false;
+        }
+
+        private void btn_Cancelar_Click(object sender, EventArgs e)
+        {
+            limpiar_cajas();
+        }
+        private void btn_Salir_Click_1(object sender, EventArgs e)
+        {
+            // Reuse existing logic: close the form
+            this.Close();
+        }
+        private void btn_Salir_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}

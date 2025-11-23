@@ -1,0 +1,59 @@
+﻿using _02_CRUD.Modelos;
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
+
+namespace _02_CRUD.Config
+{
+    public class sqlServer_dbcontext: DbContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                var cn = ConfigurationManager.ConnectionStrings["cn"].ConnectionString;
+                optionsBuilder.UseSqlServer(cn);
+            }
+        }
+
+        public DbSet<ClienteModel> Clientes { get; set; }
+        public DbSet<Usuario_Model> Usuarios { get; set; }
+        public DbSet<Rol_Model> Roles { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Llama a la implementación
+            base.OnModelCreating(modelBuilder);
+
+            //Configuracion del modelo Usuario_Model con Fecha_Ingreso por defecto GETDATE() y 
+            //la relacion con Rol_Model
+            modelBuilder.Entity<Usuario_Model>(entity =>
+            {
+                entity.HasOne(u => u.Rol)       // Un Usuario tiene un Rol
+                      .WithMany(r => r.Usuarios) // Un Rol tiene muchos Usuarios
+                      .HasForeignKey(u => u.Rol_Id); // Usando el FK de Rol_Id
+
+                //Uso de GETDATE() para la fecha de ingreso por defecto
+                entity.Property(u => u.Fecha_Ingreso)
+                      .ValueGeneratedOnAdd()
+                      .HasDefaultValueSql("GETDATE()");
+            });
+
+            //Configuracion del modelo Rol_Model para asegurar que el nombre del rol sea unico
+            modelBuilder.Entity<Rol_Model>(entity =>
+            {
+                //Asegura que el nombre del Rol sea único
+                entity.HasIndex(r => r.Nombre_Rol).IsUnique();
+            });
+        }
+
+        //Primer metodo para crear tablas en la base de datos
+        /*protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ClienteModel>()
+                .Property (c => c.Nombres)
+                .IsRequired()
+                .HasMaxLength(100);
+        }*/
+    }
+}

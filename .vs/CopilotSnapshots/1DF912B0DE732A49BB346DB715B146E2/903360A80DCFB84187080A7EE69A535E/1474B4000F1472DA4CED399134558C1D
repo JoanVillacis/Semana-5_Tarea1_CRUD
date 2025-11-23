@@ -1,0 +1,91 @@
+﻿namespace _02_CRUD.Controladores
+{
+    using _02_CRUD.Config;
+    using _02_CRUD.Modelos;
+    public class Usuarios_Controller
+    {
+        public readonly sqlServer_dbcontext _Usuario_Dbcontext = new sqlServer_dbcontext();
+
+        public List<Usuario_Model> todos()
+        {
+            var list = new List<Usuario_Model>();
+            list = _Usuario_Dbcontext.Usuarios.ToList();
+            foreach (var usuario in list)
+            {
+                usuario.nombre_completo_Usuario = usuario.Nombres_Usuario + " " + usuario.Apellidos_Usuario;
+            }
+            return list;
+        }
+
+        public Usuario_Model uno(int id)
+        {
+            return _Usuario_Dbcontext.Usuarios.FirstOrDefault(u => u.Id_Usuario == id);
+        }
+        public string insetar(Usuario_Model Usuario_Model)
+        {
+            if (Usuario_Model == null)
+            {
+                return "Debe completar las cajas de texto para guardar al Usuario";
+            }
+            else
+            {
+                _Usuario_Dbcontext.Add(Usuario_Model);
+                _Usuario_Dbcontext.SaveChanges();
+                return "ok";
+            }
+        }
+
+        public string editar(Usuario_Model Usuario_Model)
+        {
+            if (Usuario_Model == null)
+            {
+                return "Debe completar las cajas de texto para guardar al Usuario";
+            }
+            else
+            {
+                var usuario_existente = _Usuario_Dbcontext.Usuarios.FirstOrDefault(u => u.Id_Usuario == Usuario_Model.Id_Usuario);
+
+                usuario_existente.Nombres_Usuario = Usuario_Model.Nombres_Usuario;
+                usuario_existente.Apellidos_Usuario = Usuario_Model.Apellidos_Usuario;
+                usuario_existente.Cedula_Usuario = Usuario_Model.Cedula_Usuario;
+                usuario_existente.Correo_Usuario = Usuario_Model.Correo_Usuario;
+                usuario_existente.Contrasenia = Usuario_Model.Contrasenia;
+                usuario_existente.Estado_Usuario = Usuario_Model.Estado_Usuario;
+                usuario_existente.Rol_Id = Usuario_Model.Rol_Id;
+
+
+                _Usuario_Dbcontext.SaveChanges();
+                return "ok";
+            }
+        }
+
+        public string eliminar(int id)
+        {
+            var usuario = _Usuario_Dbcontext.Usuarios.Find(id);
+            if (usuario == null)
+            {
+                return "No se encontró el usuario a eliminar";
+            }
+            _Usuario_Dbcontext.Usuarios.Remove(usuario);
+            _Usuario_Dbcontext.SaveChanges();
+            MessageBox.Show("Usuario eliminado correctamente");
+            return "ok";
+        }
+
+        public string eliminacion_suave(int id)
+        {
+            if (id <= 0) return "Error al eliminar, el usuario no existe";
+            var usuario = _Usuario_Dbcontext.Usuarios.FirstOrDefault(u => u.Id_Usuario == id);
+            if (usuario != null)
+            {
+                usuario.Estado_Usuario = false;
+                _Usuario_Dbcontext.SaveChanges();
+                return "ok";
+            }
+            else
+            {
+                return "Ocurrio un error al guardar";
+            }
+        }
+    }
+}

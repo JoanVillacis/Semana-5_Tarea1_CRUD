@@ -1,0 +1,56 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace _02_CRUD.Modelos
+{
+    public class Usuario_Model
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id_Usuario { get; set; }
+
+        [Required(ErrorMessage = "El nombre es obligatorio")]
+        [StringLength(50, MinimumLength = 3)]
+        public string Nombres_Usuario { get; set; }
+
+        [StringLength(50, MinimumLength = 3)]
+        [Required(ErrorMessage = "El apellido es obligatorio")]
+        public String Apellidos_Usuario { get; set; }
+
+        [Required(ErrorMessage = "La cedula es obligatoria")]
+        public string Cedula_Usuario { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime Fecha_Ingreso { get; set; }
+
+        [Required(ErrorMessage = "El estado es obligatorio")]
+        public bool Estado_Usuario { get; set; }
+
+        [Required(ErrorMessage = "La contraseñia es obligatorio")]
+        public string Contrasenia { get; set; }
+
+        [Required(ErrorMessage = "El correo es obligatorio")]
+        public string Correo_Usuario { get; set; }
+
+
+        //Relacion con los Roles
+        //Almacena el Id del rol
+        public int Rol_Id { get; set; }
+
+        //Para la navegacion
+        [ForeignKey("Rol_Id")]
+        public Rol_Model Rol { get; set; }
+
+        //Es solo de lecutra
+        [NotMapped]
+        public string nombre_completo_Usuario { get; set; }
+
+        // Nombre del rol para mostrar en la UI
+        [NotMapped]
+        public string Rol_Nombre { get; set; }
+
+        // Propiedad combinada para mostrar Nombre + Rol
+        [NotMapped]
+        public string Mostrar => string.IsNullOrWhiteSpace(Rol_Nombre) ? nombre_completo_Usuario : $"{nombre_completo_Usuario} ({Rol_Nombre})";
+    }
+}

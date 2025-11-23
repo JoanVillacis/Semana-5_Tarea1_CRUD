@@ -1,0 +1,140 @@
+﻿using _02_CRUD.Controladores;
+using _02_CRUD.Modelos;
+using System.Linq;
+
+namespace _02_CRUD.Vistas.Usuarios
+{
+    public partial class frm_edita_usuario : Form
+    {
+        private readonly Usuarios_Controller _usuarios_Controller = new Usuarios_Controller();
+        private readonly Rol_Controller _rol_Controller = new Rol_Controller();
+        int _id;
+        public frm_edita_usuario(int id_usuario)
+        {
+            InitializeComponent();
+            _id = id_usuario;
+        }
+
+        private void frm_edita_usuario_Load(object sender, EventArgs e)
+        {
+            Usuario_Model usuario_Model = _usuarios_Controller.uno(_id);
+            if (usuario_Model == null)
+            {
+                MessageBox.Show("Usuario no encontrado");
+                this.Close();
+                return;
+            }
+
+            // Cargar lista de roles
+            List<Rol_Model> roles = new List<Rol_Model>();
+            try
+            {
+                roles = _rol_Controller.todos() ?? new List<Rol_Model>();
+            }
+            catch
+            {
+                roles = new List<Rol_Model>();
+            }
+
+            // Bind del combobox (primero DisplayMember/ValueMember luego DataSource)
+            cmb_Rol.DisplayMember = "Nombre_Rol";
+            cmb_Rol.ValueMember = "Id_Rol";
+            cmb_Rol.DataSource = roles;
+
+            // Rellenar campos del usuario
+            txt_Nombres.Text = usuario_Model.Nombres_Usuario;
+            txt_Apellidos.Text = usuario_Model.Apellidos_Usuario;
+            txt_Cedula.Text = usuario_Model.Cedula_Usuario;
+            txt_Correo.Text = usuario_Model.Correo_Usuario;
+            txt_Contrasenia.Text = usuario_Model.Contrasenia;
+            chb_Estado.Checked = usuario_Model.Estado_Usuario;
+
+            // Seleccionar el rol del usuario en el combo (si existe en la lista)
+            int rol_Selec = usuario_Model.Rol_Id;
+            if (rol_Selec > 0 && roles.Any(r => r.Id_Rol == rol_Selec))
+            {
+                cmb_Rol.SelectedValue = rol_Selec;
+            }
+            else
+            {
+                cmb_Rol.SelectedIndex = -1; // no seleccionado
+            }
+        }
+
+        private void btn_Guardar_Click(object sender, EventArgs e)
+        {
+            if (!validaciones())
+            {
+                MessageBox.Show("Complete los campos para guardar el usuario");
+                return;
+            }
+            var usuario_model = new Usuario_Model
+            {
+                Apellidos_Usuario = txt_Apellidos.Text.Trim(),
+                Nombres_Usuario = txt_Nombres.Text.Trim(),
+                Cedula_Usuario = txt_Cedula.Text.Trim(),
+                Correo_Usuario = txt_Correo.Text.Trim(),
+                Contrasenia = txt_Contrasenia.Text.Trim(),
+                Estado_Usuario = chb_Estado.Checked == true,
+                Rol_Id = cmb_Rol.SelectedValue != null ? (int)cmb_Rol.SelectedValue : 0,
+                Id_Usuario = _id
+            };
+            var nuevo_usuario = _usuarios_Controller.editar(usuario_model);
+
+            if (nuevo_usuario != "ok")
+            {
+                MessageBox.Show(nuevo_usuario);
+            }
+            else
+            {
+                MessageBox.Show("Usuario actualizado con exito");
+                limpiar_cajas();
+                // Indicar resultado OK y cerrar el formulario modal
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+        }
+
+        public void limpiar_cajas()
+        {
+            txt_Apellidos.Text = "";
+            txt_Nombres.Text = "";
+            txt_Cedula.Text = "";
+            txt_Correo.Text = "";
+            txt_Contrasenia.Text = "";
+            chb_Estado.Checked = false;
+            cmb_Rol.SelectedIndex = -1;
+        }
+
+        private void txt_Contrasenia_Leave(object sender, EventArgs e)
+        {
+
+        }
+
+        public bool validaciones()
+        {
+            if (txt_Apellidos.Text.Trim() == "" || txt_Cedula.Text.Trim() == ""
+                || txt_Contrasenia.Text.Trim() == "" || txt_Nombres.Text.Trim() == ""
+                || txt_Correo.Text.Trim() == "" || cmb_Rol.SelectedIndex == -1)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
+        private void btn_Cancelar_Click(object sender, EventArgs e)
+        {
+            limpiar_cajas();
+        }
+
+        private void btn_Salir_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+    }
+}

@@ -1,0 +1,93 @@
+﻿
+using _02_CRUD.Controladores;
+using _02_CRUD.Modelos;
+
+namespace _02_CRUD.Vistas.Usuarios
+{
+    public partial class frm_edita_usuario : Form
+    {
+        private readonly Usuarios_Controller _usuarios_Controller = new Usuarios_Controller();
+        int _id;
+        private readonly Auth_Controller _auth_Controller = new Auth_Controller();
+        public frm_edita_usuario(int id_usuario)
+        {
+            InitializeComponent();
+            _id = id_usuario;
+        }
+
+        private void frm_edita_usuario_Load(object sender, EventArgs e)
+        {
+            Usuario_Model usuario_Model = new Usuario_Model();
+            usuario_Model = _usuarios_Controller.Ctrl_usuario_uno(_id);
+
+            txt_Nombres.Text = usuario_Model.Nombre_Usuario;
+            txt_Apellidos.Text = usuario_Model.Apellido_Usuario;
+            txt_Cedula.Text = usuario_Model.Cedula_Usuario;
+            txt_Correo.Text = usuario_Model.Correo_Usuario;
+            txt_Contrasenia.Text = usuario_Model.contrasenia;
+            chb_Estado.Checked = usuario_Model.Estado;
+        }
+
+        private void btn_Guardar_Click(object sender, EventArgs e)
+        {
+            if (!validaciones())
+            {
+                MessageBox.Show("Complete los campos para guardar el usuario");
+                return;
+            }
+            var usuario_model = new Usuario_Model
+            {
+                Apellido_Usuario = txt_Apellidos.Text.Trim(),
+                Nombre_Usuario = txt_Nombres.Text.Trim(),
+                Cedula_Usuario = txt_Cedula.Text.Trim(),
+                Correo_Usuario = txt_Correo.Text.Trim(),
+                contrasenia = txt_Contrasenia.Text.Trim(),
+                Estado = chb_Estado.Checked == true,
+            };
+            var nuevo_usuario = _usuarios_Controller.editar(usuario_model);
+
+            if (nuevo_usuario.Item1 == null)
+            {
+                MessageBox.Show(nuevo_usuario.error);
+            }
+            else
+            {
+                MessageBox.Show("Usuario insertado con exito");
+                limpiar_cajas();
+                var frm_listar_usuarios = new frm_lista_usuarios();
+                frm_listar_usuarios.Show();
+                this.Close();
+            }
+        }
+
+            public void limpiar_cajas()
+        {
+            txt_Apellidos.Text = "";
+            txt_Nombres.Text = "";
+            txt_Cedula.Text = "";
+            txt_Correo.Text = "";
+            txt_Contrasenia.Text = "";
+            chb_Estado.Checked = false;
+        }
+
+        private void txt_Contrasenia_Leave(object sender, EventArgs e)
+        {
+
+        }
+
+        public bool validaciones()
+        {
+            if (txt_Apellidos.Text.Trim() == "" || txt_Cedula.Text.Trim() == ""
+                || txt_Contrasenia.Text.Trim() == "" || txt_Contrasenia.Text.Trim() == ""
+                || txt_Nombres.Text.Trim() == "")
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+    }
+}

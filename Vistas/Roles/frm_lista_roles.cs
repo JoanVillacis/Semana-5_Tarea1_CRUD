@@ -1,0 +1,91 @@
+﻿using _02_CRUD.Controladores;
+
+namespace _02_CRUD.Vistas.Roles
+{
+    public partial class frm_lista_roles : Form
+    {
+        private readonly Rol_Controller _roles = new Rol_Controller();
+        public frm_lista_roles()
+        {
+            InitializeComponent();
+        }
+
+        private void frm_lista_roles_Load(object sender, EventArgs e)
+        {
+            cargar_lista();
+        }
+
+        public void cargar_lista()
+        {
+            // Forzar refresco del DataSource para que los cambios se vean inmediatamente
+            lst_lista_roles.DataSource = null;
+            var datos = _roles.todos();
+            lst_lista_roles.DataSource = datos;
+            lst_lista_roles.ValueMember = "Id_Rol";
+            lst_lista_roles.DisplayMember = "Nombre_Rol";
+            lst_lista_roles.Refresh();
+        }
+
+        private void btn_agregar_Click(object sender, EventArgs e)
+        {
+            var frm_agregar = new frm_agregar_rol();
+            var dialog = frm_agregar.ShowDialog();
+            if (dialog == DialogResult.OK)
+            {
+                cargar_lista();
+            }
+        }
+
+        private void btn_salir_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btn_eliminar_Click(object sender, EventArgs e)
+        {
+
+            if (lst_lista_roles.SelectedIndex >= 0)
+            {
+                // Confirmar eliminación con el usuario
+                var confirm = MessageBox.Show("¿Está seguro que desea eliminar el rol seleccionado?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (confirm != DialogResult.Yes)
+                {
+                    return; // no eliminar
+                }
+
+                var result = _roles.eliminar((int)lst_lista_roles.SelectedValue);
+                if (result != "ok")
+                {
+                    MessageBox.Show(result, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Rol eliminado correctamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Seleccione un rol para eliminar", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            cargar_lista();
+        }
+
+        private void btn_editar_Click(object sender, EventArgs e)
+        {
+            if (lst_lista_roles.SelectedIndex == -1)
+            {
+                MessageBox.Show("Seleccione un usuario para editar", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                int id_rol = (int)lst_lista_roles.SelectedValue;
+                var editar_rol = new frm_editar_rol(id_rol);
+                var dialog = editar_rol.ShowDialog();
+                if (dialog == DialogResult.OK)
+                {
+                    this.Close();
+                }
+            }
+        }
+    }
+}
